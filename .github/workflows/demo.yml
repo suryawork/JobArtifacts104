@@ -9,6 +9,13 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      
+      #Step 6
+      - name: Cache Dependencies
+        uses: action/cache@v3
+        with:
+          path: ~/.npm #folder which stores in som github server for reuse in other job
+          key: deps-node-${{ hashFiles('**/package-lock.json') }} #Used for retrival
       - name: Install dependencies
         run: npm ci
       - name: Lint code
@@ -27,6 +34,12 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache dependency
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm 
+          key: deps-node-modules-${{ hashFiles('**/package-lock-json') }}
+      
       - name: Install dependencies
         run: npm ci
       - name: Build website
@@ -34,7 +47,7 @@ jobs:
       #Step 3
       - name: Publish JS Filename
         id: publish  #We should give a unique id fot the steps
-        run: find dist/assets/*.js -type f -execdir echo 'sample-output={}' >> $GITHUB_OUTPUT ';'  
+        run: find dist/assets/*.js -type f -execdir echo 'sample-output={}' >> $GITHUB_OUTPUT ';'  #Output's path variable is stored here 
       #Step 1
       - name: Upload Artifacts             #To store the Artifacts
         uses: actions/upload-artifact@v4
@@ -53,6 +66,7 @@ jobs:
           name: dist-files
       - name: Output Contents
         run: ls
+      #step 5 showing Outputs
       - name: Output Filenames
         run: echo "${{ needs.build.outputs.script-file }}"
 
@@ -78,3 +92,7 @@ jobs:
 #       - name: Publish JS Filename
 #         id: publish  #We should give a unique id fot the steps
 #         run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
+
+#Step 4 - Output
+#Step 5 - Showing Outputs 
+#Step 6 - Cache Memory
